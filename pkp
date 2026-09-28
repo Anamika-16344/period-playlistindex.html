@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Period Playlist - Pathshala Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header-title {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #d946a6;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .button-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .track-button {
+            width: 140px;
+            height: 140px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s ease;
+            position: relative;
+            box-shadow: 
+                0 12px 30px rgba(0, 0, 0, 0.5),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.1);
+            font-weight: 900;
+        }
+
+        /* 3D Glossy Effect */
+        .track-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0));
+            border-radius: 50% 50% 0 0;
+            pointer-events: none;
+        }
+
+        /* Button Colors */
+        .track-button.button-1 {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #e63946);
+            color: white;
+        }
+
+        .track-button.button-2 {
+            background: radial-gradient(circle at 30% 30%, #ffd93d, #f4a261);
+            color: #333;
+        }
+
+        .track-button.button-3 {
+            background: radial-gradient(circle at 30% 30%, #ff6b9d, #c44569);
+            color: white;
+        }
+
+        .track-button.button-4 {
+            background: radial-gradient(circle at 30% 30%, #a78bfa, #7c3aed);
+            color: white;
+        }
+
+        .track-button.button-5 {
+            background: radial-gradient(circle at 30% 30%, #c4b5fd, #8b5cf6);
+            color: white;
+        }
+
+        .track-button:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 16px 40px rgba(0, 0, 0, 0.6),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.15);
+        }
+
+        .track-button:active {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.5),
+                inset -2px -2px 6px rgba(0, 0, 0, 0.4),
+                inset 2px 2px 6px rgba(255, 255, 255, 0.05);
+        }
+
+        .track-button.playing {
+            animation: pulse-button 0.5s ease-in-out;
+        }
+
+        @keyframes pulse-button {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .track-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .track-button.disabled:hover {
+            transform: none;
+        }
+
+        .track-label {
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.3;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 8px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .button-wrapper:hover .action-buttons {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .control-section {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .new-round-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #d946a6 0%, #9f1239 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 
+                0 8px 20px rgba(217, 70, 166, 0.4),
+                inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .new-round-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(217, 70, 166, 0.5),
+                inset -1px -1px 3px rgba(0, 0, 0, 0.2),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .new-round-btn:active {
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 36px;
+            }
+
+            .buttons-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 24px;
+            }
+
+            .track-button {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+            }
+
+            .track-label {
+                font-size: 12px;
+                min-height: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 28px;
+            }
+
+            .buttons-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 16px;
+            }
+
+            .track-button {
+                width: 100px;
+                height: 100px;
+                font-size: 32px;
+            }
+
+            .track-label {
+                font-size: 11px;
+                min-height: 32px;
+            }
+
+            .new-round-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">🎧 Period Playlist</div>
+            <div class="header-subtitle">Match the sound to the condition!</div>
+        </div>
+
+        <div class="instructions">
+            Listen to the audio. Figure out which button represents the announced condition!
+        </div>
+
+        <div class="buttons-grid" id="buttonsGrid"></div>
+
+        <div class="control-section">
+            <button class="new-round-btn" id="newRoundBtn">
+                <span>🔄 New Round</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let currentlyPlayingButton = null;
+        let allOscillators = [];
+        let allGains = [];
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            return audioContext;
+        }
+
+        function stopAllSounds() {
+            allOscillators.forEach(osc => {
+                try {
+                    osc.stop();
+                } catch (e) {}
+            });
+            allGains.forEach(gain => {
+                try {
+                    gain.gain.setValueAtTime(0, audioContext.currentTime);
+                } catch (e) {}
+            });
+            allOscillators = [];
+            allGains = [];
+        }
+
+        function playHeartbeat() {
+            const ctx = initAudioContext();
+            const now = ctx.currentTime;
+            const masterGain = ctx.createGain();
+            masterGain.connect(ctx.destination);
+            masterGain.gain.setValueAtTime(0.6, now);
+
+            for (let beat = 0; beat < 6; beat++) {
+                const time = now + (beat * 0.5);
+                
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.connect(gain1);
+                gain1.connect(masterGain);
+                osc1.frequency.setValueAtTime(200, time);
+                osc1.frequency.exponentialRampToValueAtTime(150, time + 0.08);
+                gain1.gain.setValueAtTime(0.6, time);
+                gain1.gain.exponentialRampToValueAtTime(0.1, time + 0.08);
+                osc1.start(time);
+                osc1.stop(time + 0.08);
+                allOscillators.push(osc1);
+                allGains.push(gain1);
+
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(masterGain);
+                osc2.frequency.setValueAtTime(170, time + 0.1);
+                osc2.frequency.exponentialRampToValueAtTime(130, time + 0.18);
+                gain2.gain.setValueAtTime(0.5, time + 0.1);
+                gain2.gain.exponentialRampToValueAtTime(0.05, time + 0.18);
+                osc2.start(time + 0.1);
+                osc2.stop(time + 0.18);
+                allOscillators.push(osc2);
+                allGains.push(gain2);
+            }
+
+            masterGain.gain.setValueAtTime(0.6, now + 3);
+            masterGain.gain.exponentialRampToValueAtTime(0.01, now + 3.3);
+        }
+
+        function playClockTicking() {
+            const ctx = initAudioContext();
+            const now = ctx.currentTime;
+            const masterGain = ctx.createGain();
+            masterGain.connect(ctx.destination);
+            masterGain.gain.setValueAtTime(0.7, now);
+
+            for (let i = 0; i < 4; i++) {
+                const tickTime = now + (i * 0.8);
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.frequency.setValueAtTime(1400, tickTime);
+                osc.frequency.exponentialRampToValueAtTime(600, tickTime + 0.12);
+                gain.gain.setValueAtTime(0.7, tickTime);
+                gain.gain.exponentialRampToValueAtTime(0.05, tickTime + 0.12);
+                
+                osc.start(tickTime);
+                osc.stop(tickTime + 0.12);
+                allOscillators.push(osc);
+                allGains.push(gain);
+            }
+
+            masterGain.gain.setValueAtTime(0.7, now + 3.2);
+            masterGain.gain.exponentialRampToValueAtTime(0.01, now + 3.5);
+        }
+
+        function playBells() {
+            const ctx = initAudioContext();
+            const now = ctx.currentTime;
+            const masterGain = ctx.createGain();
+            masterGain.connect(ctx.destination);
+            masterGain.gain.setValueAtTime(0.65, now);
+
+            for (let i = 0; i < 8; i++) {
+                const bellTime = now + (i * 0.22);
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.frequency.setValueAtTime(1800, bellTime);
+                osc.frequency.exponentialRampToValueAtTime(1300, bellTime + 0.15);
+                gain.gain.setValueAtTime(0.7, bellTime);
+                gain.gain.exponentialRampToValueAtTime(0.1, bellTime + 0.15);
+                
+                osc.start(bellTime);
+                osc.stop(bellTime + 0.15);
+                allOscillators.push(osc);
+                allGains.push(gain);
+            }
+
+            masterGain.gain.setValueAtTime(0.65, now + 1.8);
+            masterGain.gain.exponentialRampToValueAtTime(0.01, now + 2.1);
+        }
+
+        function playWaves() {
+            const ctx = initAudioContext();
+            const now = ctx.currentTime;
+            const masterGain = ctx.createGain();
+            masterGain.connect(ctx.destination);
+            masterGain.gain.setValueAtTime(0.4, now);
+
+            for (let i = 0; i < 15; i++) {
+                const dropTime = now + (i * 0.18);
+                const freq = 300 + (Math.random() * 400);
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.frequency.setValueAtTime(freq, dropTime);
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.5, dropTime + 0.1);
+                gain.gain.setValueAtTime(0.4, dropTime);
+                gain.gain.exponentialRampToValueAtTime(0.05, dropTime + 0.1);
+                
+                osc.start(dropTime);
+                osc.stop(dropTime + 0.1);
+                allOscillators.push(osc);
+                allGains.push(gain);
+            }
+
+            masterGain.gain.setValueAtTime(0.4, now + 0.5);
+            masterGain.gain.linearRampToValueAtTime(0.75, now + 2.5);
+            masterGain.gain.linearRampToValueAtTime(0.4, now + 2.7);
+            masterGain.gain.exponentialRampToValueAtTime(0.01, now + 3);
+        }
+
+        function playLoading() {
+            const ctx = initAudioContext();
+            const now = ctx.currentTime;
+            const masterGain = ctx.createGain();
+            masterGain.connect(ctx.destination);
+            masterGain.gain.setValueAtTime(0.7, now);
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(masterGain);
+            
+            osc.frequency.setValueAtTime(500, now);
+            osc.frequency.linearRampToValueAtTime(1000, now + 0.35);
+            gain.gain.setValueAtTime(0.7, now);
+            gain.gain.exponentialRampToValueAtTime(0.05, now + 0.35);
+            
+            osc.start(now);
+            osc.stop(now + 0.35);
+            allOscillators.push(osc);
+            allGains.push(gain);
+
+            masterGain.gain.setValueAtTime(0, now + 0.4);
+        }
+
+        const tracks = [
+            { id: 1, label: "Dard-e-Periods", art: "💢", play: playHeartbeat, duration: 3.3 },
+            { id: 2, label: "Inteha Ho Gayi Intezaar Ki", art: "⏱️", play: playClockTicking, duration: 3.5 },
+            { id: 3, label: "Baar Baar Periods Aaye", art: "🔔", play: playBells, duration: 2.1 },
+            { id: 4, label: "Ajab Sa Flow Hai Yeh", art: "🌊", play: playWaves, duration: 3 },
+            { id: 5, label: "Kahan Gaye Mere Periods?", art: "❓", play: playLoading, duration: 2.85 }
+        ];
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function renderButtons() {
+            const grid = document.getElementById('buttonsGrid');
+            grid.innerHTML = '';
+            const shuffledTracks = shuffleArray(tracks);
+
+            shuffledTracks.forEach(track => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'button-wrapper';
+
+                const button = document.createElement('button');
+                button.className = `track-button button-${track.id}`;
+                button.textContent = track.art;
+
+                const label = document.createElement('div');
+                label.className = 'track-label';
+                label.textContent = track.label;
+
+                const actions = document.createElement('div');
+                actions.className = 'action-buttons';
+                actions.innerHTML = `
+                    <button class="action-btn" title="Like">❤️</button>
+                    <button class="action-btn" title="Copy">🔗</button>
+                    <button class="action-btn" title="Share">➡️</button>
+                `;
+
+                wrapper.appendChild(button);
+                wrapper.appendChild(label);
+                wrapper.appendChild(actions);
+                grid.appendChild(wrapper);
+
+                button.addEventListener('click', () => playTrack(track, button));
+            });
+        }
+
+        function playTrack(track, buttonElement) {
+            initAudioContext();
+            
+            if (currentlyPlayingButton) {
+                currentlyPlayingButton.classList.remove('playing');
+                stopAllSounds();
+            }
+
+            currentlyPlayingButton = buttonElement;
+            buttonElement.classList.add('playing');
+
+            document.querySelectorAll('.track-button').forEach(btn => {
+                btn.classList.add('disabled');
+            });
+
+            try {
+                track.play();
+            } catch (error) {
+                console.error('Error playing sound:', error);
+            }
+
+            setTimeout(() => {
+                stopAllSounds();
+                buttonElement.classList.remove('playing');
+                currentlyPlayingButton = null;
+                document.querySelectorAll('.track-button').forEach(btn => {
+                    btn.classList.remove('disabled');
+                });
+            }, track.duration * 1000);
+        }
+
+        document.getElementById('newRoundBtn').addEventListener('click', () => {
+            stopAllSounds();
+            if (currentlyPlayingButton) {
+                currentlyPlayingButton.classList.remove('playing');
+                currentlyPlayingButton = null;
+            }
+            document.querySelectorAll('.track-button').forEach(btn => {
+                btn.classList.remove('disabled', 'playing');
+            });
+            renderButtons();
+        });
+
+        renderButtons();
+    </script>
+</body>
+</html>
